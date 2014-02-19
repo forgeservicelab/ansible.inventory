@@ -146,6 +146,8 @@ if len(sys.argv) == 2 and (sys.argv[1] == '--list'):
 
         # Define group (or set to empty string)
         servers_groups = getServerGroups(f)
+        # servers name is another group - alias
+        servers_groups.append(f.name)
 
         # Create group if not exist
         for g in servers_groups:
@@ -153,9 +155,9 @@ if len(sys.argv) == 2 and (sys.argv[1] == '--list'):
                 groups[g] = []
 
         for g in servers_groups:
-            groups[g].append(f.name)
+            groups[g].append(access_ip)
         user = getSshUser(f)
-        groups['_meta']['hostvars'][f.name] = {
+        groups['_meta']['hostvars'][access_ip] = {
             'ansible_ssh_host': access_ip,
             'ansible_ssh_user': user}
 
@@ -172,7 +174,7 @@ elif len(sys.argv) == 3 and (sys.argv[1] == '--host'):
     for instance in client.servers.list():
         access_ip = getAccessIP(instance)
 
-        if sys.argv[2] in instance.name:
+        if sys.argv[2] in instance.name or sys.argv[2] == access_ip:
             for key in vars(instance):
                 # Extract value
                 value = getattr(instance, key)
