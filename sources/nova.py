@@ -120,12 +120,14 @@ def getAccessIP(vm):
 
 def getSshUser(vm):
     ssh_user = 'root'
-    image_name = client.images.get(vm.image['id']).name
-
-    if 'ubuntu' in image_name.lower():
-        ssh_user = 'ubuntu'
-    if 'centos' in  image_name.lower():
-        ssh_user = 'cloud-user'
+    try:
+        image_name = client.images.get(vm.image['id']).name
+        if 'ubuntu' in image_name.lower():
+            ssh_user = 'ubuntu'
+        if 'centos' in  image_name.lower():
+            ssh_user = 'cloud-user'
+    except:
+        pass
     return ssh_user
 
 def getServerGroups(vm):
