@@ -34,6 +34,7 @@ examples:
       code: ssh_config-inventory --host INSTANCE_IP
 '''
 
+SSH_CONF = "~/.ssh/config"
 
 try:
     import json
@@ -56,7 +57,10 @@ def checkDoc():
     print d['description']
 
 def getConfig():
-    with open(os.path.expanduser('~/.ssh/config')) as f:
+    if not os.path.isfile(os.path.expanduser(SSH_CONF)):
+        return {}
+    print "isfile"
+    with open(os.path.expanduser(SSH_CONF)) as f:
         cfg = paramiko.SSHConfig()
         cfg.parse(f)
         ret_dict = {}

@@ -120,7 +120,6 @@ def getAccessIP(vm):
 
 def getSshUser(vm):
     ssh_user = 'root'
-
     image_name = client.images.get(vm.image['id']).name
 
     if 'ubuntu' in image_name.lower():
