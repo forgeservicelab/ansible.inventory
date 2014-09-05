@@ -103,15 +103,17 @@ client = novaclient.client.Client(
 
 
 def getAccessIP(vm):
+    #print vm.addresses
+    addrs = getattr(vm, 'addresses')
     private = [ x['addr'] for x
-                in getattr(vm, 'addresses').itervalues().next()
+                in addrs.itervalues().next()
                 if x['OS-EXT-IPS:type'] == 'fixed'
               ]
     public  = [ x['addr'] for x
-                in getattr(vm, 'addresses').itervalues().next()
+                in addrs.itervalues().next()
                 if x['OS-EXT-IPS:type'] == 'floating'
               ]
-    access_ip = vm.accessIPv4 or public or private
+    access_ip = public or private
     if access_ip:
         access_ip = ''.join(access_ip)
     else:
