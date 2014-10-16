@@ -130,6 +130,8 @@ def getSshUser(vm):
             ssh_user = 'cloud-user'
         if 'debian' in  image_name.lower():
             ssh_user = 'debian'
+        if 'coreos' in  image_name.lower():
+            ssh_user = 'coreos'
     except:
         pass
     return ssh_user
