@@ -19,8 +19,13 @@
 
 # Dynamic inventory script which lets you use aliases from ~/.ssh/config.
 #
-# Paramiko is not very compatible between versions. This works on
-# 1.10.1-1git1build which seems to be the default on Ubuntu 14.04
+# There were some issues with various Paramiko versions. I took a deeper look
+# and tested heavily. Now, ansible parses this alright with Paramiko versions:
+# 1.15.1  1.15.1  1.15.0  1.15.0  1.14.1  1.14.1  1.14.0  1.14.0  1.13.2
+# 1.13.2  1.13.1  1.13.1  1.13.0  1.12.4  1.12.3  1.12.2  1.12.1  1.12.0
+# 1.11.6  1.11.5  1.11.4  1.11.3  1.11.2  1.11.1  1.11.0  1.10.7  1.10.6
+# 1.10.5  1.10.4  1.10.3  1.10.2  1.10.1  1.10.0  1.9.0  1.8.1  1.8.0
+# 1.7.7.2  1.7.7.1  1.7.6  1.7.5  1.7.4  1.7.2
 #
 # It prints inventory based on parsed ~/.ssh/config. You can refer to hosts
 # with their alias, rather than with the IP or hostname. It takes advantage
@@ -67,12 +72,18 @@ def get_config():
         cfg.parse(f)
         ret_dict = {}
         for d in cfg._config:
-            alias = d['host'][0]
+            if type(d['host']) is list:
+                alias = d['host'][0]
+            else:
+                alias = d['host']
             if ('?' in alias) or ('*' in alias):
                 continue
             _copy = dict(d)
             del _copy['host']
-            ret_dict[alias] = _copy['config']
+            if 'config' in _copy:
+                ret_dict[alias] = _copy['config']
+            else:
+                ret_dict[alias] = _copy
         return ret_dict
 
 
