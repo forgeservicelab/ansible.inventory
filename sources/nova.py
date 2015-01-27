@@ -164,9 +164,9 @@ def to_safe(word):
 def get_access_ip(server, prefer_private):
     ''' Find an IP for Ansible SSH for a host. '''
     private = ansible.module_utils.openstack.openstack_find_nova_addresses(
-              getattr(server, 'addresses'), 'fixed', 'private')
+        getattr(server, 'addresses'), 'fixed', 'private')
     public = ansible.module_utils.openstack.openstack_find_nova_addresses(
-              getattr(server, 'addresses'), 'floating', 'public')
+        getattr(server, 'addresses'), 'floating', 'public')
     if prefer_private:
         return private[0]
     if server.accessIPv4:
@@ -188,7 +188,7 @@ def get_metadata(server):
         key = 'os_' + re.sub(r"[^A-Za-z0-9\-]", "_", key).lower()
 
         # Att value to instance result (exclude manager class)
-        #TODO: maybe use value.__class__ or similar inside of key_name
+        # TODO: maybe use value.__class__ or similar inside of key_name
         if key != 'os_manager':
             results[key] = value
     return results
@@ -196,15 +196,22 @@ def get_metadata(server):
 
 def get_ssh_user(server, nova_client):
     ''' Try to guess ansible_ssh_user based on image name. '''
+    def getNumber(s):
+        try:
+            return float(s)
+        except ValueError:
+            return None
+
     try:
         image_name = nova_client.images.get(server.image['id']).name
         if 'ubuntu' in image_name.lower():
             return 'ubuntu'
-        if 'centos' in  image_name.lower():
-            return 'cloud-user'
-        if 'debian' in  image_name.lower():
+        if 'centos' in image_name.lower():
+            return 'cloud-user' if getNumber(image_name[image.name.lower().rfind('centos'):].lower().replace('-', ' '
+                                    ).replace('_', ' ').split('centos')[1].strip().split()[0]) <= 7 else 'centos'
+        if 'debian' in image_name.lower():
             return 'debian'
-        if 'coreos' in  image_name.lower():
+        if 'coreos' in image_name.lower():
             return 'coreos'
     except:
         pass
@@ -358,7 +365,7 @@ def get_cache_filename(call_params):
                   "project_id: %(project_id)s, resolve_ips: %(resolve_ips)s"
                   % call_params)
     return os.path.join(os.path.expanduser(CACHE_DIR),
-                 md5.new(id_to_hash).hexdigest() + ".nova.json")
+                        md5.new(id_to_hash).hexdigest() + ".nova.json")
 
 
 def cache_valid(call_params):
@@ -390,12 +397,12 @@ def get_args(args_list):
         description='Nova dynamic inventory for Ansible')
     g = parser.add_mutually_exclusive_group()
     g.add_argument('--list', action='store_true', default=True,
-                       help='List instances (default: True)')
+                   help='List instances (default: True)')
     g.add_argument('--host', action='store',
-                       help='Get all the variables about a specific instance')
+                   help='Get all the variables about a specific instance')
     parser.add_argument('--refresh-cache', action='store_true', default=False,
-                       help=('Force refresh of cache by making API requests to'
-                             'Nova (default: False - use cache files)'))
+                        help=('Force refresh of cache by making API requests to'
+                              'Nova (default: False - use cache files)'))
     return parser.parse_args(args_list)
 
 
