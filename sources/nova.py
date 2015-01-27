@@ -207,8 +207,10 @@ def get_ssh_user(server, nova_client):
         if 'ubuntu' in image_name.lower():
             return 'ubuntu'
         if 'centos' in image_name.lower():
-            return 'cloud-user' if getNumber(image_name[image.name.lower().rfind('centos'):].lower().replace('-', ' '
-                                    ).replace('_', ' ').split('centos')[1].strip().split()[0]) <= 7 else 'centos'
+            if '7' in image_name.lower():
+                return  'centos'
+            else:
+                return  'cloud-user'
         if 'debian' in image_name.lower():
             return 'debian'
         if 'coreos' in image_name.lower():
