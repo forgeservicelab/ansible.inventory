@@ -223,6 +223,7 @@ def get_nova_client(combination):
     so we need to create a copy and delete keys that are not relevant.
     '''
     kwargs = dict(combination)
+    kwargs['tenant_id'] = kwargs.pop('project_id')
     del kwargs['name']
     del kwargs['prefer_private']
     del kwargs['cache_max_age']
